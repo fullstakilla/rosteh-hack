@@ -1,0 +1,33 @@
+html {
+    box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+img {
+    display: block;
+    max-width: 100%;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a {
+    margin: 0;
+    padding: 0;
+}
+body {
+    margin: 0 auto;
+}
+:root {
+    --accent-color: #f7654a;
+    --dark-color: #404149;
+    --gray-color: #999999;
+    --white-color: #ffffff;
+    --background-color: #e5e5e5;
+}

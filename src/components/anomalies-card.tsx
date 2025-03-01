@@ -21,7 +21,7 @@ export function AnomaliesCard({ anomalies }: AnomaliesCardProps) {
 
     return (
         <div
-            className={`rounded-lg p-4 min-h-16 flex flex-col justify-center ${
+            className={`rounded-lg p-4 min-h-16  ${
                 hasCritical
                     ? "bg-red-50 border-red-200 border"
                     : hasWarnings

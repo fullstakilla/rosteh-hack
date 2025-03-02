@@ -1,7 +1,7 @@
 import { Download, Loader2 } from "lucide-react";
 import { ParametersCard } from "@/components/parameters-card";
 import { ToolData } from "@/lib/types";
-import { useSSE } from "@/lib/hooks/use-sse";
+import { useSSE } from "@/hooks/use-sse";
 import { useEffect, useState } from "react";
 import { AnomaliesCard } from "@/components/anomalies-card";
 

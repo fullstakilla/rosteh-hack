@@ -1,12 +1,11 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ToolTypes } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export function translateToolType(toolType: ToolTypes) {
+export function translateToolType(toolType: string) {
     switch (toolType) {
         case "tokarnoe":
             return "Токарное";

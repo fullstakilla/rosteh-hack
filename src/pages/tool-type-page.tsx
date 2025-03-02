@@ -179,7 +179,7 @@ export default function ToolTypePage() {
                                     ? "Отличная работа! Сбоев не зафиксировано"
                                     : totalFailures === 1
                                     ? "Зафиксирован 1 сбой"
-                                    : `Зафиксировано ${totalFailures} сбоев`}
+                                    : `Зафиксировано ${totalFailures} сбоя`}
                             </div>
                         </div>
                     </CardContent>

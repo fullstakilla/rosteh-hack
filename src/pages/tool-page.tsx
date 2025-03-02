@@ -4,9 +4,13 @@ import { ToolData } from "@/lib/types";
 import { useSSE } from "@/hooks/use-sse";
 import { useEffect, useState } from "react";
 import { AnomaliesCard } from "@/components/anomalies-card";
+// import { usePDF } from "react-to-pdf";
 
 export default function ToolPage() {
     const [toolData, setToolData] = useState<ToolData>();
+    // const { toPDF, targetRef } = usePDF({
+    //     filename: `report.${new Date().toISOString()}.pdf`,
+    // });
     const { connected, error } = useSSE<ToolData>({
         url: "http://localhost:8080/events",
         onMessage: (receivedData) => {
@@ -44,12 +48,18 @@ export default function ToolPage() {
         );
 
     return (
-        <div className="w-full h-full p-6 mx-auto px-20 pt-10">
+        <div
+            className="w-full h-full p-6 mx-auto px-20 pt-10"
+            // ref={targetRef}
+        >
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-bold font-mono">
                     Токарный станок
                 </h1>
-                <div className="flex items-center gap-2 cursor-pointer">
+                <div
+                    className="flex items-center gap-2 cursor-pointer"
+                    // onClick={() => toPDF()}
+                >
                     <Download className="h-8 w-8" />
                 </div>
             </div>

@@ -1,61 +1,53 @@
-import { Download, Gauge, Thermometer, Volume2, Waves } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { ParametersCard } from "@/components/parameters-card";
-import { AnomaliesCard } from "@/components/anomalies-card";
 import { ToolData } from "@/lib/types";
+import { useSSE } from "@/lib/hooks/use-sse";
+import { useEffect, useState } from "react";
+import { AnomaliesCard } from "@/components/anomalies-card";
 
 export default function ToolPage() {
-    const toolData: ToolData = {
-        name: "Токарный станок HAAS ST-20",
-        load: 76,
-        parameters: [
-            {
-                name: "Температура шпинделя",
-                value: "63°C",
-                status: "warning",
-                icon: Thermometer,
-                statusText: "Высокая",
-            },
-            {
-                name: "Ток/мощность",
-                value: "15.2 кВт",
-                status: "normal",
-                icon: Gauge,
-                statusText: "Норма",
-            },
-            {
-                name: "Вибрация",
-                value: "2.1 g",
-                status: "warning",
-                icon: Waves,
-                statusText: "Повышенная",
-            },
-            {
-                name: "Шум",
-                value: "87 дБ",
-                status: "normal",
-                icon: Volume2,
-                statusText: "Норма",
-            },
-        ],
-        anomalies: [
-            {
-                type: "critical",
-                text: "**Скачок напряжения**",
-                time: "(18:32)",
-            },
-            {
-                type: "warning",
-                text: "**Нетипичный простой**",
-                time: "(12:10 - 12:40)",
-            },
-        ],
-    };
+    const [toolData, setToolData] = useState<ToolData>();
+    const { connected, error } = useSSE<ToolData>({
+        url: "http://localhost:8080/events",
+        onMessage: (receivedData) => {
+            setToolData(receivedData);
+        },
+        onError: (err) => {
+            console.error("SSE connection error:", err);
+        },
+        onOpen: () => {
+            console.log("SSE connection opened to localhost:8080");
+        },
+    });
+
+    // cтатус подключения
+    useEffect(() => {
+        if (connected) {
+            console.log("Connected to SSE server");
+        } else {
+            console.log("Disconnected from SSE server");
+        }
+    }, [connected]);
+
+    // ошибки
+    useEffect(() => {
+        if (error) {
+            console.error("SSE error:", error);
+        }
+    }, [error]);
+
+    if (!toolData)
+        return (
+            <div className="w-full h-screen flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        );
 
     return (
         <div className="w-full h-full p-6 mx-auto px-20 pt-10">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-bold font-mono">
-                    {toolData.name}
+                    Токарный станок
                 </h1>
                 <div className="flex items-center gap-2 cursor-pointer">
                     <Download className="h-8 w-8" />
@@ -64,14 +56,16 @@ export default function ToolPage() {
 
             <div className="mb-8">
                 <p className="text-lg font-mono">
-                    Текущая загрузка: {toolData.load}%
+                    Текущая загруженность: 73%
+                    <span className="ml-3 text-sm">
+                        <span className="text-green-500">● Онлайн</span>
+                    </span>
                 </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ParametersCard parameters={toolData.parameters} />
-
-                <AnomaliesCard anomalies={toolData.anomalies} />
+                <ParametersCard toolData={toolData} />
+                <AnomaliesCard toolData={toolData} />
             </div>
         </div>
     );

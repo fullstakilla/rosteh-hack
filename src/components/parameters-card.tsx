@@ -1,139 +1,202 @@
-import { ToolParameter } from "@/lib/types";
-import { AlertTriangle } from "lucide-react";
+import { ToolData } from "@/lib/types";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "./ui/accordion";
+import {
+    AlertTriangle,
+    AlertOctagon,
+    CheckCircle,
+    Wifi,
+    Volume2,
+    Activity,
+    Zap,
+    Thermometer,
+    Gauge,
+} from "lucide-react";
 
 interface ParametersCardProps {
-    parameters: ToolParameter[];
+    toolData: ToolData;
 }
 
-// Расширим тип параметра, добавив детальную информацию
-interface DetailedParameter {
-    name: string;
-    value: string;
-}
+const sensorMockData = {
+    Температура: {
+        nominal: "45°C",
+        max: "85°C",
+        unit: "°C",
+    },
+    Мощность: {
+        nominal: "10 кВт",
+        max: "18 кВт",
+        unit: "кВт",
+    },
+    Вибрация: {
+        nominal: "1.5 g",
+        max: "3.0 g",
+        unit: "Гц",
+    },
+    Шум: {
+        nominal: "75 дБ",
+        max: "95 дБ",
+        unit: "дБ",
+    },
+};
 
-export function ParametersCard({ parameters }: ParametersCardProps) {
-    // Дополнительные детали для каждого параметра (в реальном приложении это может приходить с сервера)
-    const parameterDetails: Record<string, DetailedParameter[]> = {
-        "Температура шпинделя": [
-            { name: "Состояние подключения к сети", value: "Подключено" },
-            { name: "Номинальная температура", value: "45°C" },
-            { name: "Максимально допустимая температура", value: "75°C" },
-            {
-                name: "Время работы с повышенной температурой",
-                value: "1ч 23мин",
-            },
-        ],
-        "Ток/мощность": [
-            { name: "Состояние подключения к сети", value: "Подключено" },
-            {
-                name: "Номинальная потребляемая мощность",
-                value: "10.5 кВт (в нерабочем состоянии)",
-            },
-            {
-                name: "Фактическая потребляемая мощность",
-                value: "15.2 кВт (во время обработки детали)",
-            },
-        ],
-        Вибрация: [
-            { name: "Состояние подключения к сети", value: "Подключено" },
-            { name: "Номинальная вибрация", value: "0.8 g" },
-            { name: "Максимально допустимая вибрация", value: "2.5 g" },
-            { name: "Время работы с повышенной вибрацией", value: "45мин" },
-        ],
-        Шум: [
-            { name: "Состояние подключения к сети", value: "Подключено" },
-            { name: "Номинальный уровень шума", value: "80 дБ" },
-            { name: "Максимально допустимый уровень шума", value: "95 дБ" },
-            { name: "Средний уровень шума за сегодня", value: "85 дБ" },
-        ],
-    };
+export function ParametersCard({ toolData }: ParametersCardProps) {
+    const sensors = toolData.sensors;
 
     return (
         <div className="border-2 rounded-lg overflow-hidden border-gray-200">
-            <div className="p-3 font-bold font-mono text-lg bg-gray-100">
+            <div className={`p-3 font-bold font-mono text-lg bg-gray-700}`}>
                 Параметры оборудования
             </div>
 
             <Accordion type="single" collapsible className="w-full">
-                {parameters.map((param, index) => (
-                    <AccordionItem
-                        key={index}
-                        value={`param-${index}`}
-                        className={`border-b ${
-                            param.status === "warning"
-                                ? "bg-amber-50"
-                                : param.status === "critical"
-                                ? "bg-red-50"
-                                : "bg-green-50"
-                        }`}
-                    >
-                        <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                            <div className="flex items-center w-full">
-                                <div className="w-8 mr-2">
-                                    <param.icon
-                                        className={`h-6 w-6 ${
-                                            param.status === "warning"
+                {sensors.map((param, index) => {
+                    const mockData =
+                        sensorMockData[
+                            param.sensor_name as keyof typeof sensorMockData
+                        ];
+
+                    return (
+                        <AccordionItem
+                            key={index}
+                            value={`param-${index}`}
+                            className={`border-b ${
+                                param.status_message === "warning"
+                                    ? "bg-amber-50"
+                                    : param.status_message === "critical"
+                                    ? "bg-red-50"
+                                    : "bg-green-50"
+                            }`}
+                        >
+                            <AccordionTrigger className="px-4 py-3 hover:no-underline flex items-center justify-between">
+                                <div className="flex items-center w-full">
+                                    <div className="w-8 mr-2">
+                                        {param.sensor_name === "Температура" ? (
+                                            <Thermometer className="h-5 w-5" />
+                                        ) : param.sensor_name === "Мощность" ? (
+                                            <Zap className="h-5 w-5" />
+                                        ) : param.sensor_name === "Вибрация" ? (
+                                            <Activity className="h-5 w-5" />
+                                        ) : param.sensor_name === "Шум" ? (
+                                            <Volume2 className="h-5 w-5" />
+                                        ) : (
+                                            <Gauge className="h-5 w-5" />
+                                        )}
+                                    </div>
+                                    <div className="font-mono">
+                                        {param.sensor_name}
+                                    </div>
+                                    <div className="font-mono font-bol ml-auto  mr-30 flex items-center gap-5">
+                                        <span className="font-bold">
+                                            {param.value.toFixed(2)}
+                                        </span>
+                                        <span className="font-bold">
+                                            {mockData.unit}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className={`font-mono mr-4 font-semibold ${
+                                            param.status_message === "warning"
                                                 ? "text-amber-500"
-                                                : param.status === "critical"
+                                                : param.status_message ===
+                                                  "critical"
                                                 ? "text-red-500"
                                                 : "text-green-500"
                                         }`}
-                                    />
+                                    >
+                                        {param.status_message === "warning" ? (
+                                            <AlertTriangle className="h-5 w-5" />
+                                        ) : param.status_message ===
+                                          "critical" ? (
+                                            <AlertOctagon className="h-5 w-5" />
+                                        ) : (
+                                            <CheckCircle className="h-5 w-5" />
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="font-mono flex-grow">
-                                    {param.name}
-                                </div>
-                                <div className="font-mono font-bold mx-4">
-                                    {param.value}
-                                </div>
-                                <div className="w-8 mx-2">
-                                    {param.status === "warning" && (
-                                        <AlertTriangle className="h-6 w-6 text-amber-500" />
-                                    )}
-                                    {param.status === "normal" && (
-                                        <div className="h-6 w-6 rounded-sm bg-green-500" />
-                                    )}
-                                </div>
-                                <div
-                                    className={`font-mono mr-4 ${
-                                        param.status === "warning"
-                                            ? "text-amber-500 font-semibold"
-                                            : param.status === "critical"
-                                            ? "text-red-500 font-semibold"
-                                            : "text-green-500 font-semibold"
-                                    }`}
-                                >
-                                    {param.statusText}
-                                </div>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-4 py-2 bg-white">
-                            <div className="space-y-2 pl-10">
-                                {parameterDetails[param.name]?.map(
-                                    (detail, detailIndex) => (
-                                        <div
-                                            key={detailIndex}
-                                            className="flex justify-between border-b border-gray-100 py-2"
-                                        >
-                                            <div className="font-mono text-gray-600">
-                                                {detail.name}:
-                                            </div>
-                                            <div className="font-mono font-medium">
-                                                {detail.value}
-                                            </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-4 py-4 bg-white">
+                                <div className="space-y-3 pl-10">
+                                    <div className="flex justify-between border-b border-gray-100 py-2">
+                                        <div className="font-mono text-gray-600 flex items-center">
+                                            Состояние:
                                         </div>
-                                    )
-                                )}
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
+                                        <div className="font-mono font-medium flex items-center">
+                                            <Wifi className="h-5 w-5 mr-2 text-green-500" />
+                                            <span className="text-green-600">
+                                                В сети
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between border-b border-gray-100 py-2">
+                                        <div className="font-mono text-gray-600">
+                                            Номинальное значение:
+                                        </div>
+                                        <div className="font-mono font-medium">
+                                            {mockData.nominal}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between border-b border-gray-100 py-2">
+                                        <div className="font-mono text-gray-600">
+                                            Максимальное значение:
+                                        </div>
+                                        <div className="font-mono font-medium">
+                                            {mockData.max}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between border-b border-gray-100 py-2">
+                                        <div className="font-mono text-gray-600">
+                                            Фактическое значение:
+                                        </div>
+                                        <div className="font-mono font-medium">
+                                            {param.value.toFixed(2)}
+                                            {mockData.unit}
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4">
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                                            <div
+                                                className={`h-2.5 rounded-full ${
+                                                    param.status_message ===
+                                                    "critical"
+                                                        ? "bg-red-600"
+                                                        : param.status_message ===
+                                                          "warning"
+                                                        ? "bg-amber-500"
+                                                        : "bg-green-600"
+                                                }`}
+                                                style={{
+                                                    width: `${Math.min(
+                                                        (parseFloat(
+                                                            `${param.value}`
+                                                        ) /
+                                                            parseFloat(
+                                                                mockData.max
+                                                            )) *
+                                                            100,
+                                                        100
+                                                    )}%`,
+                                                }}
+                                            ></div>
+                                        </div>
+                                        <div className="flex justify-between text-xs">
+                                            <span>0{mockData.unit}</span>
+                                            <span>{mockData.max}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    );
+                })}
             </Accordion>
         </div>
     );

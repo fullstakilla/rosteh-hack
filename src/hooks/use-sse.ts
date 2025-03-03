@@ -36,12 +36,10 @@ export function useSSE<T = any>({
         source.onmessage = (event) => {
             try {
                 const parsedData = JSON.parse(event.data) as T;
-                console.log("SSE message received:", parsedData);
                 setData(parsedData);
                 if (callbacksRef.current.onMessage)
                     callbacksRef.current.onMessage(parsedData);
             } catch {
-                console.log("SSE raw message received:", event.data);
                 setData(event.data as unknown as T);
                 if (callbacksRef.current.onMessage)
                     callbacksRef.current.onMessage(event.data as unknown as T);
@@ -49,7 +47,6 @@ export function useSSE<T = any>({
         };
 
         source.onerror = (event) => {
-            console.error("SSE connection error:", event);
             setError(event);
             setConnected(false);
             if (callbacksRef.current.onError)
@@ -57,7 +54,6 @@ export function useSSE<T = any>({
         };
 
         return () => {
-            console.log("Closing SSE connection");
             source.close();
         };
     }, [url]);

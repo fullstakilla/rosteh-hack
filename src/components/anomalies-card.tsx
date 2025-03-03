@@ -1,17 +1,19 @@
 import { ToolData } from "@/lib/types";
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
-import { AlertTriangle, AlertCircle } from "lucide-react";
+// import {
+//     Accordion,
+//     AccordionContent,
+//     AccordionItem,
+//     AccordionTrigger,
+// } from "@/components/ui/accordion";
+// import { AlertTriangle, AlertCircle } from "lucide-react";
 
 interface AnomaliesCardProps {
     toolData: ToolData;
 }
 
 export function AnomaliesCard({ toolData }: AnomaliesCardProps) {
+    console.log(toolData);
+
     // const hasCritical = anomalies
     //     .slice(1)
     //     .some((anomaly) => anomaly.type === "critical");

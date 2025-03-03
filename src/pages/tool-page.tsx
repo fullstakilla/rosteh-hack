@@ -2,49 +2,20 @@ import { Download, Loader2 } from "lucide-react";
 import { ParametersCard } from "@/components/parameters-card";
 import { ToolData } from "@/lib/types";
 import { useSSE } from "@/hooks/use-sse";
-import { useEffect, useState } from "react";
-import { readings } from "@/constants/indications";
+import { useState } from "react";
 import { WorkingTimeCard } from "@/components/working-time-card";
-import { useScreenshot } from "@/hooks/use-screenshot";
+import { usePDF } from "react-to-pdf";
 
 export default function ToolPage() {
-    const { targetRef, takeScreenshot } = useScreenshot({
-        filename: "tool-status.pdf",
-        format: "a4",
-        orientation: "portrait",
-    });
+    const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
 
     const [toolData, setToolData] = useState<ToolData>();
-    const { connected, error } = useSSE<ToolData>({
+    const { connected } = useSSE<ToolData>({
         url: "http://localhost:8080/events",
         onMessage: (receivedData) => {
             setToolData(receivedData);
         },
-        onError: (err) => {
-            console.error("SSE connection error:", err);
-        },
-        onOpen: () => {
-            console.log("SSE connection opened to localhost:8080");
-        },
     });
-
-    console.log(readings);
-
-    // Статус подключения
-    useEffect(() => {
-        if (connected) {
-            console.log("Connected to SSE server");
-        } else {
-            console.log("Disconnected from SSE server");
-        }
-    }, [connected]);
-
-    // Ошибки
-    useEffect(() => {
-        if (error) {
-            console.error("SSE error:", error);
-        }
-    }, [error]);
 
     if (!toolData)
         return (
@@ -61,7 +32,7 @@ export default function ToolPage() {
                 </h1>
                 <div
                     className="flex items-center gap-2 cursor-pointer"
-                    onClick={takeScreenshot}
+                    onClick={() => toPDF()}
                 >
                     <Download className="h-8 w-8" />
                 </div>
@@ -72,9 +43,9 @@ export default function ToolPage() {
                     Текущая загруженность: 73%
                     <span className="ml-3 text-sm">
                         {connected ? (
-                            <span className="text-green-500">● Онлайн</span>
+                            <span className="text-[#00c951]">● Онлайн</span>
                         ) : (
-                            <span className="text-red-500">● Офлайн</span>
+                            <span className="text-[#fb2c36]">● Офлайн</span>
                         )}
                     </span>
                 </p>

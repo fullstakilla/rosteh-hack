@@ -3,14 +3,18 @@ import { ParametersCard } from "@/components/parameters-card";
 import { ToolData } from "@/lib/types";
 import { useSSE } from "@/hooks/use-sse";
 import { useEffect, useState } from "react";
-import { AnomaliesCard } from "@/components/anomalies-card";
-// import { usePDF } from "react-to-pdf";
+import { readings } from "@/constants/indications";
+import { WorkingTimeCard } from "@/components/working-time-card";
+import { useScreenshot } from "@/hooks/use-screenshot";
 
 export default function ToolPage() {
+    const { targetRef, takeScreenshot } = useScreenshot({
+        filename: "tool-status.pdf",
+        format: "a4",
+        orientation: "portrait",
+    });
+
     const [toolData, setToolData] = useState<ToolData>();
-    // const { toPDF, targetRef } = usePDF({
-    //     filename: `report.${new Date().toISOString()}.pdf`,
-    // });
     const { connected, error } = useSSE<ToolData>({
         url: "http://localhost:8080/events",
         onMessage: (receivedData) => {
@@ -24,7 +28,9 @@ export default function ToolPage() {
         },
     });
 
-    // cтатус подключения
+    console.log(readings);
+
+    // Статус подключения
     useEffect(() => {
         if (connected) {
             console.log("Connected to SSE server");
@@ -33,7 +39,7 @@ export default function ToolPage() {
         }
     }, [connected]);
 
-    // ошибки
+    // Ошибки
     useEffect(() => {
         if (error) {
             console.error("SSE error:", error);
@@ -48,17 +54,14 @@ export default function ToolPage() {
         );
 
     return (
-        <div
-            className="w-full h-full p-6 mx-auto px-20 pt-10"
-            // ref={targetRef}
-        >
+        <div className="w-full h-full p-6 mx-auto px-20 pt-10" ref={targetRef}>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-bold font-mono">
                     Токарный станок
                 </h1>
                 <div
                     className="flex items-center gap-2 cursor-pointer"
-                    // onClick={() => toPDF()}
+                    onClick={takeScreenshot}
                 >
                     <Download className="h-8 w-8" />
                 </div>
@@ -68,14 +71,19 @@ export default function ToolPage() {
                 <p className="text-lg font-mono">
                     Текущая загруженность: 73%
                     <span className="ml-3 text-sm">
-                        <span className="text-green-500">● Онлайн</span>
+                        {connected ? (
+                            <span className="text-green-500">● Онлайн</span>
+                        ) : (
+                            <span className="text-red-500">● Офлайн</span>
+                        )}
                     </span>
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-10 w-full">
                 <ParametersCard toolData={toolData} />
-                <AnomaliesCard toolData={toolData} />
+                {/* <AnomaliesCard toolData={toolData} /> */}
+                <WorkingTimeCard />
             </div>
         </div>
     );

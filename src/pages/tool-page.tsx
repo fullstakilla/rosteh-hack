@@ -5,9 +5,12 @@ import { useSSE } from "@/hooks/use-sse";
 import { useState } from "react";
 import { WorkingTimeCard } from "@/components/working-time-card";
 import { usePDF } from "react-to-pdf";
+import { AnomaliesCard } from "@/components/anomalies-card";
 
 export default function ToolPage() {
-    const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
+    const { toPDF, targetRef } = usePDF({
+        filename: `HAAS_ST-20.${new Date().toISOString().split("T")[0]}.pdf`,
+    });
 
     const [toolData, setToolData] = useState<ToolData>();
     const { connected } = useSSE<ToolData>({
@@ -28,7 +31,7 @@ export default function ToolPage() {
         <div className="w-full h-full p-6 mx-auto px-20 pt-10" ref={targetRef}>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-bold font-mono">
-                    Токарный станок
+                    Токарный станок HAAS ST-20
                 </h1>
                 <div
                     className="flex items-center gap-2 cursor-pointer"
@@ -52,8 +55,10 @@ export default function ToolPage() {
             </div>
 
             <div className="flex flex-col gap-10 w-full">
-                <ParametersCard toolData={toolData} />
-                {/* <AnomaliesCard toolData={toolData} /> */}
+                <div className="flex gap-10 w-full">
+                    <ParametersCard toolData={toolData} />
+                    <AnomaliesCard />
+                </div>
                 <WorkingTimeCard />
             </div>
         </div>

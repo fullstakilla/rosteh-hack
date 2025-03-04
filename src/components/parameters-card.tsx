@@ -48,9 +48,9 @@ export function ParametersCard({ toolData }: ParametersCardProps) {
     const sensors = toolData.sensors;
 
     return (
-        <div className="border-2 rounded-lg overflow-hidden border-[#e5e7eb]">
-            <div className={`p-3 font-bold font-mono text-lg}`}>
-                Параметры оборудования
+        <div className="border-2 rounded-lg overflow-hidden border-[#e5e7eb] w-1/2">
+            <div className={`p-3 font-bold font-mono text-lg`}>
+                Доступные датчики
             </div>
 
             <Accordion type="single" collapsible className="w-full">

@@ -104,7 +104,7 @@ export default function ToolTypePage() {
         workingEquipment;
 
     return (
-        <div className="py-8 px-4 w-full h-full flex flex-col items-center pt-10">
+        <div className="py-8 px-4 w-full h-full flex flex-col items-center pt-4">
             <h1 className="text-4xl font-bold text-center">
                 {translateToolType(toolType)} Оборудование
             </h1>

@@ -60,7 +60,7 @@ export function AppSidebar() {
     return (
         <Sidebar>
             <SidebarHeader className="flex justify-center items-center">
-                <Link to="/">
+                <Link to="/home">
                     <img src={mireaLogo} alt="logo" className="w-20 h-20" />
                 </Link>
             </SidebarHeader>

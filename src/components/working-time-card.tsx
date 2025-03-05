@@ -101,7 +101,7 @@ export function WorkingTimeCard() {
         <div className="border-2 rounded-lg overflow-hidden border-[#e5e7eb] w-full">
             {/* Заголовок карточки */}
             <div className="p-3 font-bold font-mono text-lg bg-[#f3f4f6]">
-                Карточка времени работы
+                Дополнительная информация
             </div>
 
             {/* Основное содержимое карточки */}

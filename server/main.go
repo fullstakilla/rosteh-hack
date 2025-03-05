@@ -49,11 +49,7 @@ func analyzeSensorData(power, temp, heatSensor, rotation float64) []SensorStatus
 	sensors = append(sensors, SensorStatus{Value: temp, Status: tempStatus, SensorName: "Температура станка"})
 
 	// Анализ датчика присутствия (тепловой)
-	heatSensorStatus := normalStatus
-	if heatSensor < 30.0 {
-		heatSensorStatus = warningStatus // Оператор не обнаружен
-	}
-	sensors = append(sensors, SensorStatus{Value: heatSensor, Status: heatSensorStatus, SensorName: "Датчик присутствия"})
+	sensors = append(sensors, SensorStatus{Value: heatSensor, Status: "Присутствует", SensorName: "Датчик присутствия"})
 
 	// Анализ скорости вращения
 	rotationStatus := normalStatus

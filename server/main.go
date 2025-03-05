@@ -25,7 +25,7 @@ const (
 	criticalStatus = "critical"
 )
 
-func analyzeSensorData(power, temp, vibration, noise float64) []SensorStatus {
+func analyzeSensorData(power, temp, heatSensor, rotation float64) []SensorStatus {
 	sensors := make([]SensorStatus, 0)
 
 	// Анализ мощности
@@ -33,28 +33,37 @@ func analyzeSensorData(power, temp, vibration, noise float64) []SensorStatus {
 	if power > 40.0 {
 		powerStatus = warningStatus
 	}
+	if power > 45.0 {
+		powerStatus = criticalStatus
+	}
 	sensors = append(sensors, SensorStatus{Value: power, Status: powerStatus, SensorName: "Мощность"})
 
-	// Анализ температуры
+	// Анализ температуры станка
 	tempStatus := normalStatus
 	if temp > 70.0 {
 		tempStatus = warningStatus
 	}
-	sensors = append(sensors, SensorStatus{Value: temp, Status: tempStatus, SensorName: "Температура"})
-
-	// Анализ вибрации
-	vibrationStatus := normalStatus
-	if vibration > 3.0 {
-		vibrationStatus = warningStatus
+	if temp > 85.0 {
+		tempStatus = criticalStatus
 	}
-	sensors = append(sensors, SensorStatus{Value: vibration, Status: vibrationStatus, SensorName: "Вибрация"})
+	sensors = append(sensors, SensorStatus{Value: temp, Status: tempStatus, SensorName: "Температура станка"})
 
-	// Анализ шума
-	noiseStatus := normalStatus
-	if noise > 95.0 {
-		noiseStatus = warningStatus
+	// Анализ датчика присутствия (тепловой)
+	heatSensorStatus := normalStatus
+	if heatSensor < 30.0 {
+		heatSensorStatus = warningStatus // Оператор не обнаружен
 	}
-	sensors = append(sensors, SensorStatus{Value: noise, Status: noiseStatus, SensorName: "Шум"})
+	sensors = append(sensors, SensorStatus{Value: heatSensor, Status: heatSensorStatus, SensorName: "Датчик присутствия"})
+
+	// Анализ скорости вращения
+	rotationStatus := normalStatus
+	if rotation > 3000.0 {
+		rotationStatus = warningStatus
+	}
+	if rotation > 3500.0 {
+		rotationStatus = criticalStatus
+	}
+	sensors = append(sensors, SensorStatus{Value: rotation, Status: rotationStatus, SensorName: "Скорость вращения"})
 
 	return sensors
 }
@@ -62,14 +71,14 @@ func analyzeSensorData(power, temp, vibration, noise float64) []SensorStatus {
 func generateSensorData() SensorData {
 	rand.Seed(time.Now().UnixNano())
 
-	power := 10.0 + rand.Float64()*40.0   // 10 - 50 кВт
-	temp := 30.0 + rand.Float64()*60.0    // 30 - 90°C
-	vibration := 0.1 + rand.Float64()*4.9 // 0.1 - 5.0 g
-	noise := 60.0 + rand.Float64()*40.0   // 60 - 100 дБ
+	power := 10.0 + rand.Float64()*40.0        // 10 - 50 кВт
+	temp := 30.0 + rand.Float64()*60.0         // 30 - 90°C
+	heatSensor := 25.0 + rand.Float64()*20.0   // 25 - 45°C (температура присутствия человека)
+	rotation := 1000.0 + rand.Float64()*3000.0 // 1000 - 4000 об/мин
 
 	return SensorData{
 		Timestamp: time.Now(),
-		Sensors:   analyzeSensorData(power, temp, vibration, noise),
+		Sensors:   analyzeSensorData(power, temp, heatSensor, rotation),
 	}
 }
 
@@ -174,14 +183,14 @@ const htmlContent = `
                     case "Мощность":
                         unit = "кВт";
                         break;
-                    case "Температура":
+                    case "Температура станка":
                         unit = "°C";
                         break;
-                    case "Вибрация":
-                        unit = "g";
+                    case "Датчик присутствия":
+                        unit = "°C";
                         break;
-                    case "Шум":
-                        unit = "дБ";
+                    case "Скорость вращения":
+                        unit = "об/мин";
                         break;
                 }
                 

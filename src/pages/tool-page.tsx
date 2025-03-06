@@ -30,9 +30,12 @@ export default function ToolPage() {
     return (
         <div className="w-full h-full p-6 mx-auto px-20 pt-4" ref={targetRef}>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-4xl font-bold font-mono">
-                    Токарный станок HAAS ST-20
-                </h1>
+                <div>
+                    <h1 className="text-4xl font-bold font-mono">
+                        Токарный станок HAAS ST-20
+                    </h1>
+                    <p className="text-muted-foreground mt-1">Цех 1</p>
+                </div>
                 <div
                     className="flex items-center gap-2 cursor-pointer"
                     onClick={() => toPDF()}

@@ -132,7 +132,7 @@ export default function AuthPage() {
                 </div>
 
                 <div className="mt-6 text-center text-sm text-gray-600">
-                    © 2024 Система мониторинга. Все права защищены.
+                    © 2025 Система мониторинга. Все права защищены.
                 </div>
             </div>
         </div>

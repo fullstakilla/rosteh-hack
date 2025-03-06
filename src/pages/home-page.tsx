@@ -5,7 +5,7 @@ import { ArrowRight, BarChart2, Settings, Wrench } from "lucide-react";
 
 export default function HomePage() {
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center pt-20 px-4">
+        <div className="w-full h-full flex flex-col items-center justify-center pt-6 px-4">
             <div className="max-w-4xl mx-auto text-center space-y-10">
                 <div className="space-y-6 flex flex-col gap-12">
                     <h1 className="text-5xl font-bold">

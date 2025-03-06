@@ -17,16 +17,25 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Activity, AlertTriangle, CheckCircle } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { useState, useMemo } from "react";
 
 const toolsData = [
     {
         id: 1,
         name: "Токарный станок HAAS ST-20",
         status: "В работе",
-        failuresToday: 0,
+        failuresToday: 1,
         efficiency: "97%",
         lastMaintenance: "15.05.2024",
         nextMaintenance: "15.06.2025",
+        workshop: "Цех 1",
     },
     {
         id: 2,
@@ -36,24 +45,27 @@ const toolsData = [
         efficiency: "92%",
         lastMaintenance: "10.05.2024",
         nextMaintenance: "10.06.2025",
+        workshop: "Цех 2",
     },
     {
         id: 3,
         name: "Токарный станок ТС-2000",
-        status: "Простой",
-        failuresToday: 2,
+        status: "Техобслуживание",
+        failuresToday: 0,
         efficiency: "78%",
         lastMaintenance: "05.04.2024",
         nextMaintenance: "05.05.2025",
+        workshop: "Цех 1",
     },
     {
         id: 4,
         name: "Токарный станок ТС-3000",
         status: "В работе",
-        failuresToday: 1,
+        failuresToday: 0,
         efficiency: "85%",
         lastMaintenance: "20.04.2024",
         nextMaintenance: "20.05.2025",
+        workshop: "Цех 2",
     },
     {
         id: 5,
@@ -63,6 +75,7 @@ const toolsData = [
         efficiency: "0%",
         lastMaintenance: "Сегодня",
         nextMaintenance: "15.06.2025",
+        workshop: "Цех 1",
     },
     {
         id: 6,
@@ -72,44 +85,54 @@ const toolsData = [
         efficiency: "95%",
         lastMaintenance: "01.05.2024",
         nextMaintenance: "01.06.2025",
+        workshop: "Цех 2",
     },
 ];
 
 export default function ToolTypePage() {
     const { toolType } = useParams<{ toolType: string }>();
+    const [selectedWorkshop, setSelectedWorkshop] = useState<string>("all");
+    const filteredToolsData = useMemo(() => {
+        if (selectedWorkshop === "all") return toolsData;
+        return toolsData.filter((tool) => tool.workshop === selectedWorkshop);
+    }, [selectedWorkshop]);
 
     if (!toolType) return null;
 
-    // Рассчитываем статистику для карточек
-    const totalEquipment = toolsData.length;
-    const workingEquipment = toolsData.filter(
+    // Фильтруем данные по цеху
+
+    // Рассчитываем статистику для карточек на основе отфильтрованных данных
+    const totalEquipment = filteredToolsData.length;
+    const workingEquipment = filteredToolsData.filter(
         (tool) => tool.status === "В работе"
     ).length;
-    const maintenanceEquipment = toolsData.filter(
+    const maintenanceEquipment = filteredToolsData.filter(
         (tool) => tool.status === "Техобслуживание"
     ).length;
-    const failureEquipment = toolsData.filter(
+    const failureEquipment = filteredToolsData.filter(
         (tool) => tool.status === "Простой"
     ).length;
 
-    const totalFailures = toolsData.reduce(
+    const totalFailures = filteredToolsData.reduce(
         (sum, tool) => sum + tool.failuresToday,
         0
     );
 
     const avgEfficiency =
-        toolsData
+        filteredToolsData
             .filter((tool) => tool.status === "В работе")
             .reduce((sum, tool) => sum + parseInt(tool.efficiency), 0) /
-        workingEquipment;
+            workingEquipment || 0;
 
     return (
-        <div className="py-8 px-4 w-full h-full flex flex-col items-center pt-4">
-            <h1 className="text-4xl font-bold text-center">
-                {translateToolType(toolType)} Оборудование
-            </h1>
+        <div className="pb-8 px-4 w-full h-full flex flex-col items-center">
+            <div className="flex flex-col items-center gap-4">
+                <h1 className="text-4xl font-bold text-center">
+                    {translateToolType(toolType)} Оборудование
+                </h1>
+            </div>
 
-            <div className="w-full max-w-[1200px] mx-auto mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="w-full max-w-[1200px] mx-auto mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -212,16 +235,32 @@ export default function ToolTypePage() {
                 </Card>
             </div>
 
-            <div className="w-full max-w-[1200px] mx-auto mt-12">
+            <Select
+                value={selectedWorkshop}
+                onValueChange={setSelectedWorkshop}
+            >
+                <SelectTrigger className="w-[180px] mt-6 ">
+                    <SelectValue placeholder="Выберите цех" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Все цеха</SelectItem>
+                    <SelectItem value="Цех 1">Цех 1</SelectItem>
+                    <SelectItem value="Цех 2">Цех 2</SelectItem>
+                </SelectContent>
+            </Select>
+
+            <div className="w-full max-w-[1200px] mx-auto mt-6">
                 <Table>
                     <TableCaption>
                         Список доступного оборудования типа "
                         {translateToolType(toolType)}"
+                        {selectedWorkshop !== "all" && ` в ${selectedWorkshop}`}
                     </TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Название</TableHead>
                             <TableHead>Статус</TableHead>
+                            <TableHead>Цех</TableHead>
                             <TableHead className="text-center">
                                 Сбои за день
                             </TableHead>
@@ -233,7 +272,7 @@ export default function ToolTypePage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {toolsData.map((tool, index) => (
+                        {filteredToolsData.map((tool, index) => (
                             <TableRow key={tool.id}>
                                 <TableCell className="font-medium">
                                     {index === 0 ? (
@@ -262,6 +301,7 @@ export default function ToolTypePage() {
                                         {tool.status}
                                     </span>
                                 </TableCell>
+                                <TableCell>{tool.workshop}</TableCell>
                                 <TableCell className="text-center">
                                     <span
                                         className={`font-medium ${

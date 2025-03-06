@@ -10,11 +10,11 @@ import {
     AlertOctagon,
     CheckCircle,
     Wifi,
-    Volume2,
-    Activity,
     Zap,
     Thermometer,
     Gauge,
+    UserCheck,
+    RotateCw,
 } from "lucide-react";
 
 interface ParametersCardProps {
@@ -22,7 +22,7 @@ interface ParametersCardProps {
 }
 
 const sensorMockData = {
-    Температура: {
+    "Температура станка": {
         nominal: "45°C",
         max: "85°C",
         unit: "°C",
@@ -32,15 +32,15 @@ const sensorMockData = {
         max: "18 кВт",
         unit: "кВт",
     },
-    Вибрация: {
-        nominal: "1.5 g",
-        max: "3.0 g",
-        unit: "Гц",
+    "Датчик присутствия": {
+        nominal: "Оператор присутствует",
+        max: "Нет",
+        unit: "",
     },
-    Шум: {
-        nominal: "75 дБ",
-        max: "95 дБ",
-        unit: "дБ",
+    "Скорость вращения": {
+        nominal: "2000 об/мин",
+        max: "3500 об/мин",
+        unit: "об/мин",
     },
 };
 
@@ -75,14 +75,17 @@ export function ParametersCard({ toolData }: ParametersCardProps) {
                             <AccordionTrigger className="px-4 py-3 hover:no-underline flex items-center justify-between">
                                 <div className="flex items-center w-full">
                                     <div className="w-8 mr-2">
-                                        {param.sensor_name === "Температура" ? (
+                                        {param.sensor_name ===
+                                        "Температура станка" ? (
                                             <Thermometer className="h-5 w-5" />
                                         ) : param.sensor_name === "Мощность" ? (
                                             <Zap className="h-5 w-5" />
-                                        ) : param.sensor_name === "Вибрация" ? (
-                                            <Activity className="h-5 w-5" />
-                                        ) : param.sensor_name === "Шум" ? (
-                                            <Volume2 className="h-5 w-5" />
+                                        ) : param.sensor_name ===
+                                          "Датчик присутствия" ? (
+                                            <UserCheck className="h-5 w-5" />
+                                        ) : param.sensor_name ===
+                                          "Скорость вращения" ? (
+                                            <RotateCw className="h-5 w-5" />
                                         ) : (
                                             <Gauge className="h-5 w-5" />
                                         )}
@@ -90,9 +93,12 @@ export function ParametersCard({ toolData }: ParametersCardProps) {
                                     <div className="font-mono">
                                         {param.sensor_name}
                                     </div>
-                                    <div className="font-mono font-bol ml-auto  mr-30 flex items-center gap-5">
+                                    <div className="font-mono font-bol ml-auto mr-30 flex items-center gap-5 w-8">
                                         <span className="font-bold">
-                                            {param.value.toFixed(2)}
+                                            {param.sensor_name ===
+                                            "Датчик присутствия"
+                                                ? "Присутствует"
+                                                : param.value.toFixed(2)}
                                         </span>
                                         <span className="font-bold">
                                             {mockData.unit}
@@ -156,7 +162,10 @@ export function ParametersCard({ toolData }: ParametersCardProps) {
                                             Фактическое значение:
                                         </div>
                                         <div className="font-mono font-medium">
-                                            {param.value.toFixed(2)}
+                                            {param.sensor_name ===
+                                            "Датчик присутствия"
+                                                ? "Присутствует"
+                                                : param.value.toFixed(2)}
                                             {mockData.unit}
                                         </div>
                                     </div>
